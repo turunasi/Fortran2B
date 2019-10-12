@@ -7,7 +7,7 @@ program mat
 	write(*,'(A)',advance='no')'input number of elements m,n (ex. "4 5"):'
 	read(*,*) m,n
 
-	allocate(A(m,n) stat=ier)
+	allocate(A(m,n), stat=ier)
 	if (ier /= 0) then
 		write(*,*) 'Memory allocate Failed!'
 		stop
@@ -21,8 +21,8 @@ program mat
 		enddo
 	enddo
 
-	write(fmt, '(A,I0,A')'(',n,'F5.1)'
-	write(*.fmt)(A(i,:),i=1,m)
+	write(fmt,'(A,I0,A)')'(',n,'F5.1)'
+	write(*,fmt)(A(i,:),i=1,m)
 	write(*,*) A
 
 	deallocate(A)
