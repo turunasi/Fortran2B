@@ -16,7 +16,7 @@ module autodiff
         module procedure difftimediff, rtimediff, difftimer
     end interface
     interface operator(/)
-        module procedure diffdevidediff, rdivedediff, diffdevider
+        module procedure diffdevidediff, rdevidediff, diffdevider
     end interface
     interface log
         module procedure logdiff
@@ -55,7 +55,7 @@ module autodiff
         real(8), intent(in) :: c
         type(diff), intent(in) :: f
         type(diff) :: g
-        g = diffset(f%x+c f%dx)
+        g = diffset(f%x+c, f%dx)
     end function diffplusr
     function diffminusdiff(f1, f2) result(g)
         type(diff), intent(in) :: f1, f2
@@ -72,19 +72,19 @@ module autodiff
         real(8), intent(in) :: c
         type(diff), intent(in) :: f
         type(diff) :: g
-        g = diffset(f%x-c f%dx)
+        g = diffset(f%x-c, f%dx)
     end function diffminusr
     function difftimediff(f1, f2) result(g)
         type(diff), intent(in) :: f1, f2
         type(diff) :: g
         g = diffset(f1%x*f2%x, f1%dx*f2%x+f1%x*f2%dx)
-    end function difftimer
+    end function difftimediff
     function rtimediff(c, f) result(g)
         real(8), intent(in) :: c
         type(diff), intent(in) :: f
         type(diff) :: g
-        g = diffset(c*f%x, c%*f%dx)
-    end function rdifftime
+        g = diffset(c*f%x, c*f%dx)
+    end function rtimediff
     function difftimer(f, c) result(g)
         real(8), intent(in) :: c
         type(diff), intent(in) :: f
@@ -94,13 +94,13 @@ module autodiff
     function diffdevidediff(f1, f2) result(g)
         type(diff), intent(in) :: f1, f2
         type(diff) :: g
-        g = diffset(f1%x/f2%x, f1%dx/f2%x+f1%x/f2%dx)
+        g = diffset(f1%x/f2%x, (f1%dx - f1%x*f2%dx/f2%x)/f2%x)
     end function diffdevidediff
     function rdevidediff(c, f) result(g)
         real(8), intent(in) :: c
         type(diff), intent(in) :: f
         type(diff) :: g
-        g = diffset(c/f%x, c%/f%dx)
+        g = diffset(c/f%x, -c*f%dx/f%x/f%x)
     end function rdevidediff
     function diffdevider(f, c) result(g)
         real(8), intent(in) :: c
@@ -111,15 +111,15 @@ module autodiff
     function expdiff(f) result(g)
         type(diff), intent(in) :: f
         type(diff) :: g
-        g = diffset((exp(f%x),f%dx*exp(f%x)))
+        g = diffset(exp(f%x),1d0/f%x)
     end function expdiff
     function logdiff(f) result(g)
         type(diff), intent(in) :: f
         type(diff) :: g
-        g = diffset((log(f%x),f%dx/f%x))
-    end function expdiff
+        g = diffset(log(f%x),f%dx/f%x)
+    end function logdiff
     subroutine dispdiff(f)
         type(diff), intent(in) :: f
-        write(*,*) 'f%x:', f%x, 'f%dx', f%dx
+        write(*,*) 'f%x:', f%x, 'f%dx:', f%dx
     end subroutine dispdiff
 end module autodiff
